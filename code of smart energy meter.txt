@@ -1,0 +1,61 @@
+% smart_energy_meter.m
+% Arduino-compatible code saved in .m format (Note: Not MATLAB syntax)
+
+#include <WiFi.h>
+#include <BlynkSimpleEsp32.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+// Blynk credentials
+char auth[] = "YourAuthToken";
+char ssid[] = "YourWiFiSSID";
+char pass[] = "YourWiFiPassword";
+
+// LCD setup
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Sensor pins
+const int currentSensorPin = 34;
+const int voltageSensorPin = 35;
+const int relayPin = 25;
+
+// Calibration values (adjust as needed)
+float currentFactor = 0.185;  // ACS712
+float voltageFactor = 0.057;  // ZMPT101B
+
+void setup() {
+  Serial.begin(115200);
+  Blynk.begin(auth, ssid, pass);
+  lcd.init();
+  lcd.backlight();
+
+  pinMode(relayPin, OUTPUT);
+  digitalWrite(relayPin, LOW);
+}
+
+void loop() {
+  Blynk.run();
+
+  int rawCurrent = analogRead(currentSensorPin);
+  int rawVoltage = analogRead(voltageSensorPin);
+
+  float Irms = rawCurrent * currentFactor;
+  float Vrms = rawVoltage * voltageFactor;
+  float power = Vrms * Irms;
+
+  lcd.setCursor(0, 0);
+  lcd.print("V: ");
+  lcd.print(Vrms, 2);
+  lcd.print(" V");
+
+  lcd.setCursor(0, 1);
+  lcd.print("I: ");
+  lcd.print(Irms, 2);
+  lcd.print(" A");
+
+  Blynk.virtualWrite(V1, Vrms);
+  Blynk.virtualWrite(V2, Irms);
+  Blynk.virtualWrite(V3, power);
+
+  delay(1000);
+}
