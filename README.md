@@ -90,7 +90,8 @@ To convert analog values to voltage and current accurately:
 
 - **Mohamed Fawzan N** – RA2211004010643  
 - **Sudharshan V** – RA2211004010645  
-- **Rajendra G** – RA2211004010647  
+- **Rajendra G** – RA2211004010647
+-  **Jamison B** – RA2211004010646
 
 ---
 
